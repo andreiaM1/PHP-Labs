@@ -1,0 +1,68 @@
+<?php
+    class DBController{
+        private $host="localhost";
+        private $user = "root";
+        private $password = "";
+        private $database = "simple_cart";
+        private static $conn;
+
+        function __construct(){
+            $this->conn =  mysqli_connect(
+                $this->host, 
+                $this->user, 
+                $this->password,
+                $this->database
+            );
+        }
+
+        // public function getConnection(){
+        //     if(empty($this->conn)){
+        //         new DataBase();
+        //     }
+        // }
+
+        function getDBResult($query, $params = array()){
+            $sql_statement = $this->conn->prepare($query);
+            if(!empty($params)){
+                $this->bindParams($sql_statement,$params);
+            }
+            $sql_statement->execute();
+            $result = $sql_statement->get_result();
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()){
+                    $resultset[] = $row;
+                }
+            }
+            if(!empty($resultset)){
+                return $resultset;
+            }
+        }
+
+        function updateDB($query, $params = array()){
+            $sql_statement = $this->conn->prepare($query);
+            if(!empty($params)){
+                $this->bindParams($sql_statement,$params);
+            }
+            $sql_statement->execute();
+        }
+
+        function bindParams($sql_statement, $params){
+            $param_type = "";
+            foreach($params as $param){
+                $param_type .=$param["param_type"];
+            }
+
+            $bind_params[] = & $param_type;
+            foreach($params as $key=>$param){
+                $bind_params[] = & $params[$key]["param_value"];
+            }
+
+            call_user_func_array(array(
+                $sql_statement,
+                'bind_param',
+                ),
+                $bind_params);
+        }
+    }
+
+?>

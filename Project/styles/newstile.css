@@ -1,0 +1,7 @@
+.txt-heading {
+    color: #211a1a;
+    border-bottom: 1px solid #E0E0E0;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
